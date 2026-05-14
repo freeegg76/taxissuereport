@@ -14,6 +14,9 @@ frontend/.env*.local
 output/exports/
 outputexports/
 
+# ── 설치 시 자동 생성되는 파일 ────────────────────────────────────────────────
+_run_backend.bat
+
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]

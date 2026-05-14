@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import issues, analysis, cases, reports, exports, logs
+from app.routers import issues, analysis, cases, reports, exports, logs, config
 
 app = FastAPI(title="세무 이슈 보고서 자동화 API", version="1.0.0")
 
@@ -18,6 +18,7 @@ app.include_router(cases.router, prefix="/api/v1", tags=["cases"])
 app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 app.include_router(exports.router, prefix="/api/v1", tags=["exports"])
 app.include_router(logs.router, prefix="/api/v1", tags=["logs"])
+app.include_router(config.router, prefix="/api/v1", tags=["config"])
 
 
 @app.get("/health")
