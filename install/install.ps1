@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # ── 경로 설정 ────────────────────────────────────────────────────────────────
-$ROOT        = $PSScriptRoot
+$ROOT        = Split-Path $PSScriptRoot -Parent   # install/ 의 부모 = 프로젝트 루트
 $BACKEND     = Join-Path $ROOT "backend"
 $FRONTEND    = Join-Path $ROOT "frontend"
 $VENV        = Join-Path $BACKEND ".venv"
@@ -81,7 +81,6 @@ if ($pyCmd) {
             --accept-source-agreements --accept-package-agreements --silent `
             | Out-Null
         RefreshPath
-        # winget installs Python Launcher (py.exe) which is most reliable
         $pyCmd = "py"
         $ver = (& $pyCmd --version 2>&1).ToString().Trim()
         OK "Python 설치 완료: $ver"
@@ -269,7 +268,7 @@ start "세무AI-프론트엔드" cmd /k "cd /d "%FRONTEND%" && npm start"
 :: ── 브라우저 열기 ────────────────────────────────────────────────
 timeout /t 6 /nobreak >nul
 
-:: 첫 설정인지 확인 (law_key_set 이 false 이면 /config 로)
+:: 첫 설정인지 확인 (setup_complete 가 false 이면 /config 로)
 set "OPEN_URL=http://localhost:3000"
 for /f "delims=" %%R in ('curl -s --max-time 3 http://localhost:8001/api/v1/config 2^>nul') do set "CFG=%%R"
 echo %CFG% | findstr /i "\"setup_complete\":false" >nul 2>&1
@@ -283,7 +282,7 @@ echo.
 '@
 
 $startContent | Set-Content $START_BAT -Encoding UTF8
-OK "start.bat 생성됨"
+OK "start.bat 생성됨 (프로젝트 루트)"
 
 # _run_backend.bat (재시작 루프용) ──────────────────────────────
 $runBackend = @'
@@ -305,7 +304,7 @@ echo  [백엔드] 종료됨.
 '@
 
 $runBackend | Set-Content (Join-Path $ROOT "_run_backend.bat") -Encoding UTF8
-OK "_run_backend.bat 생성됨 (재시작 루프)"
+OK "_run_backend.bat 생성됨 (프로젝트 루트)"
 
 # stop.bat ────────────────────────────────────────────────────
 $stopContent = @'
@@ -326,7 +325,7 @@ timeout /t 2 /nobreak >nul
 '@
 
 $stopContent | Set-Content $STOP_BAT -Encoding UTF8
-OK "stop.bat 생성됨"
+OK "stop.bat 생성됨 (프로젝트 루트)"
 
 # ────────────────────────────────────────────────────────────
 # 완료

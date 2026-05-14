@@ -6,7 +6,7 @@ echo.
 echo  세무 AI 어시스턴트 설치를 시작합니다...
 echo.
 
-:: PowerShell 실행 (ExecutionPolicy 우회)
+:: install.ps1 은 같은 폴더(install/)에 있음
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0install.ps1"
 
 if %errorlevel% neq 0 (
