@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f9fa;
+  --foreground: #171717;
+  --sidebar-width: 240px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+}
+
+/* LLM opinion block */
+.llm-opinion {
+  border-left: 3px solid #f0ad4e;
+  background: #fef9f0;
+  padding: 8px 14px;
+  margin: 10px 0;
+  border-radius: 2px;
+  font-style: italic;
+  color: #7a5700;
+}
+
+/* Prose styles for report markdown */
+.report-prose h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #1e293b;
+}
+
+.report-prose h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 4px;
+}
+
+.report-prose h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  color: #334155;
+}
+
+.report-prose p {
+  margin-bottom: 0.6rem;
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
+.report-prose ul, .report-prose ol {
+  margin: 0.5rem 0 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.report-prose li {
+  margin-bottom: 0.25rem;
+}
+
+.report-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 0.75rem 0;
+}
+
+.report-prose th {
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.report-prose td {
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+}
+
+.report-prose blockquote {
+  border-left: 3px solid #94a3b8;
+  background: #f8fafc;
+  padding: 6px 12px;
+  margin: 8px 0;
+  color: #475569;
+  font-style: italic;
+}
+
+.report-prose hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 1rem 0;
+}
+
+/* Toast animation */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.toast-enter {
+  animation: slideInRight 0.25s ease-out forwards;
+}
+
+.toast-exit {
+  animation: fadeOut 0.3s ease-in forwards;
+}
+
+/* Slide panel */
+@keyframes slideInPanel {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.panel-enter {
+  animation: slideInPanel 0.25s ease-out forwards;
+}
