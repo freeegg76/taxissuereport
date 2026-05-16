@@ -190,8 +190,19 @@ if (-not (Test-Path $ENV_FILE)) {
     OK ".env 파일 이미 존재함"
 }
 
-# 가상환경 생성
-if (-not (Test-Path $VENV_PY)) {
+# 가상환경 생성 (기존 venv의 pip 상태 확인 후 손상 시 재생성)
+$needCreateVenv = $true
+if (Test-Path $VENV_PY) {
+    $pipCheck = & $VENV_PY -m pip --version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        $needCreateVenv = $false
+        OK "가상환경 이미 존재함"
+    } else {
+        Warn "기존 가상환경의 pip가 손상됨 → 재생성합니다..."
+        Remove-Item $VENV -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+if ($needCreateVenv) {
     Info "Python 가상환경 생성 중..."
     Push-Location $BACKEND
     try {
@@ -203,19 +214,17 @@ if (-not (Test-Path $VENV_PY)) {
         Fail "Python 가상환경 생성에 실패했습니다: $_"
     }
     Pop-Location
-} else {
-    OK "가상환경 이미 존재함"
 }
 
 # pip 패키지 설치
 Info "Python 패키지 설치 중... (시간이 걸릴 수 있습니다)"
 Push-Location $BACKEND
 try {
-    # pip 업그레이드 실패는 무시 (일부 환경에서 자기 자신 업그레이드 불가)
+    # pip 업그레이드 (실패해도 계속)
     & $VENV_PY -m pip install --upgrade pip --quiet
     if ($LASTEXITCODE -ne 0) { Warn "pip 업그레이드 건너뜀 (무시하고 계속)" }
 
-    & $VENV_PY -m pip install -r requirements.txt --quiet
+    & $VENV_PY -m pip install -r requirements.txt --no-warn-script-location
     if ($LASTEXITCODE -ne 0) { throw "pip install 실패 (exit: $LASTEXITCODE)" }
     OK "Python 패키지 설치 완료"
 } catch {
