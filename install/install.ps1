@@ -213,9 +213,9 @@ if (-not (Test-Path $VENV_PY)) {
 Info "Python 패키지 설치 중... (시간이 걸릴 수 있습니다)"
 Push-Location $BACKEND
 try {
-    & $VENV_PY -m pip install --upgrade pip --quiet 2>&1 | Out-Null
-    & $VENV_PY -m pip install -r requirements.txt --quiet 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw "pip install 실패" }
+    & $VENV_PY -m pip install --upgrade pip --quiet
+    & $VENV_PY -m pip install -r requirements.txt --quiet
+    if ($LASTEXITCODE -ne 0) { throw "pip install 실패 (exit: $LASTEXITCODE)" }
     OK "Python 패키지 설치 완료"
 } catch {
     Pop-Location
@@ -227,8 +227,8 @@ Pop-Location
 Info "데이터베이스 초기화 중..."
 Push-Location $BACKEND
 try {
-    & $VENV_PY -m alembic upgrade head 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw "alembic 실패" }
+    & $VENV_PY -m alembic upgrade head
+    if ($LASTEXITCODE -ne 0) { throw "alembic upgrade 실패 (exit: $LASTEXITCODE)" }
     OK "데이터베이스 초기화 완료"
 } catch {
     Pop-Location
@@ -254,9 +254,9 @@ if (-not (Test-Path $envLocal)) {
 Info "Node.js 패키지 설치 중... (시간이 걸릴 수 있습니다)"
 Push-Location $FRONTEND
 try {
-    & npm install --prefer-offline 2>&1 | Out-Null
+    & npm install --prefer-offline
     if ($LASTEXITCODE -ne 0) {
-        & npm install 2>&1 | Out-Null
+        & npm install
         if ($LASTEXITCODE -ne 0) { throw "npm install 실패" }
     }
     OK "Node.js 패키지 설치 완료"
