@@ -83,17 +83,21 @@
 【 방법 1 】 install 폴더만 복사하여 설치 (가장 간단)
 ─────────────────────────────────────────────
 
-  설치 파일 2개만 있으면 됩니다. 소스코드는 자동으로 다운로드됩니다.
+  설치 파일 3개만 있으면 됩니다. 소스코드는 자동으로 다운로드됩니다.
 
-  1. 아래 두 파일을 새 PC에 복사합니다.
+  1. 아래 세 파일을 새 PC에 복사합니다.
        install\install.bat
+       install\install.vbs
        install\install.ps1
 
      예) USB 또는 공유 폴더에서 복사
          복사 위치 예) C:\세무AI\install\install.bat
+                       C:\세무AI\install\install.vbs
                        C:\세무AI\install\install.ps1
 
   2. [ install.bat ] 파일을 더블클릭합니다.
+     install.bat 실행 시 화면이 즉시 닫히거나 오류가 발생하면
+     대신 [ install.vbs ] 를 더블클릭하세요. (아래 FAQ 참조)
 
   3. 소스코드를 GitHub에서 자동으로 다운로드한 후 설치를 계속 진행합니다.
      (인터넷 연결 필요)
@@ -306,6 +310,11 @@ Q. API 키를 변경하고 싶습니다.
 A. http://localhost:3000/config 에서 언제든지 변경 가능합니다.
    저장 후 서버가 자동으로 재시작되어 즉시 반영됩니다.
 
+Q. install.bat 을 더블클릭해도 화면이 바로 닫힙니다.
+A. install.vbs 파일을 더블클릭하여 설치하세요.
+   일부 PC에서 cmd.exe 실행 오류(0xc0000142)가 발생할 수 있으며,
+   install.vbs 는 이를 우회하여 PowerShell을 직접 실행합니다.
+
 Q. 이미 설치한 후 재설치가 필요합니다.
 A. install.bat 을 다시 실행하면 됩니다.
    기존 데이터(보고서 이력)는 유지되며, 패키지만 업데이트됩니다.
@@ -331,9 +340,19 @@ A. 모든 데이터는 로컬 PC에만 저장됩니다.
 
 ■ PowerShell 실행 정책 오류
   증상 : "이 시스템에서 스크립트를 실행할 수 없으므로..."
-  해결 : 명령 프롬프트를 관리자 권한으로 실행한 후 아래 명령을 입력하세요.
+  해결 : install.bat 은 -ExecutionPolicy Bypass 옵션으로 실행되므로
+         별도 정책 변경 없이 동작해야 합니다.
+         그래도 오류가 발생하면 install.vbs 를 대신 더블클릭하세요.
+         install.vbs 도 실패할 경우, 관리자 권한 명령 프롬프트에서
+         아래 명령을 입력한 후 install.bat 을 다시 실행하세요.
          > Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-         이후 install.bat 을 다시 실행하세요.
+
+■ install.bat 실행 시 화면이 즉시 닫힘 (0xc0000142 오류)
+  증상 : install.bat 더블클릭 시 창이 바로 사라지거나
+         "응용 프로그램을 올바르게 시작할 수 없습니다 (0xc0000142)" 오류 발생
+  원인 : 일부 환경에서 cmd.exe 자체가 정상 실행되지 않는 경우
+  해결 : install.vbs 파일을 더블클릭하세요.
+         (cmd.exe를 거치지 않고 PowerShell을 직접 실행합니다)
 
 ■ npm run build 실패
   증상 : "프론트엔드 빌드에 실패했습니다"
