@@ -1,8 +1,10 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # 세무 AI 어시스턴트 업데이트 스크립트 v1.0
 
 $ErrorActionPreference = "Stop"
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$null = chcp 65001
+[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(65001)
+$OutputEncoding             = [System.Text.Encoding]::GetEncoding(65001)
 
 $ROOT     = Split-Path $PSScriptRoot -Parent
 $BACKEND  = Join-Path $ROOT "backend"
@@ -48,9 +50,9 @@ Step "서비스 중지"
 foreach ($port in @(8001, 3000)) {
     $lines = netstat -aon 2>$null | Select-String ":$port "
     foreach ($line in $lines) {
-        $pid = ($line -split '\s+')[-1]
-        if ($pid -match '^\d+$') {
-            try { Stop-Process -Id ([int]$pid) -Force -ErrorAction SilentlyContinue } catch {}
+        $procId = ($line -split '\s+')[-1]
+        if ($procId -match '^\d+$') {
+            try { Stop-Process -Id ([int]$procId) -Force -ErrorAction SilentlyContinue } catch {}
         }
     }
 }
