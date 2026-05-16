@@ -114,7 +114,7 @@ export default function ConfigPage() {
     const start = Date.now();
     while (Date.now() - start < maxWait) {
       try {
-        await apiClient.get("/health", { timeout: 2000 });
+        await apiClient.get("/config", { timeout: 2000 });
         return true;
       } catch {
         await new Promise((r) => setTimeout(r, 2000));
