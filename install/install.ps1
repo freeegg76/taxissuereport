@@ -292,98 +292,19 @@ Pop-Location
 Step "실행 파일 생성"   # STEP 7
 
 # start.bat ───────────────────────────────────────────────────
-$startContent = @'
-@echo off
-chcp 65001 >nul 2>&1
-title 세무 AI 어시스턴트
-
-set "ROOT=%~dp0"
-set "BACKEND=%ROOT%backend"
-set "FRONTEND=%ROOT%frontend"
-set "VENV_PY=%BACKEND%\.venv\Scripts\python.exe"
-
-echo.
-echo  +--------------------------------------------------+
-echo  |          세무 AI 어시스턴트  시작 중...          |
-echo  +--------------------------------------------------+
-echo.
-
-:: ── 포트 충돌 정리 ────────────────────────────────────────────
-for /f "tokens=5" %%p in ('netstat -aon 2^>nul ^| findstr ":8001 "') do (
-    taskkill /PID %%p /F >nul 2>&1
-)
-for /f "tokens=5" %%p in ('netstat -aon 2^>nul ^| findstr ":3000 "') do (
-    taskkill /PID %%p /F >nul 2>&1
-)
-
-:: ── 백엔드 시작 (재시작 루프 포함) ──────────────────────────────
-start "세무AI-백엔드" cmd /c "call "%ROOT%_run_backend.bat""
-
-:: ── 프론트엔드 준비 대기 후 시작 ────────────────────────────────
-timeout /t 4 /nobreak >nul
-start "세무AI-프론트엔드" cmd /k "cd /d "%FRONTEND%" && npm start"
-
-:: ── 브라우저 열기 ────────────────────────────────────────────────
-timeout /t 6 /nobreak >nul
-
-:: 첫 설정인지 확인 (setup_complete 가 false 이면 /config 로)
-set "OPEN_URL=http://localhost:3000"
-for /f "delims=" %%R in ('curl -s --max-time 3 http://localhost:8001/api/v1/config 2^>nul') do set "CFG=%%R"
-echo %CFG% | findstr /i "\"setup_complete\":false" >nul 2>&1
-if not errorlevel 1 set "OPEN_URL=http://localhost:3000/config"
-
-start "" "%OPEN_URL%"
-echo.
-echo  서비스가 시작되었습니다: %OPEN_URL%
-echo  종료하려면 stop.bat 을 실행하세요.
-echo.
-'@
-
-$startContent | Set-Content $START_BAT -Encoding UTF8
-OK "start.bat 생성됨 (프로젝트 루트)"
+$startContent = "@echo off`r`nset `"ROOT=%~dp0`"`r`nset `"BACKEND=%ROOT%backend`"`r`nset `"FRONTEND=%ROOT%frontend`"`r`nset `"VENV_PY=%BACKEND%\.venv\Scripts\python.exe`"`r`nfor /f `"tokens=5`" %%p in ('netstat -aon 2^>nul ^| findstr `":8001 `"') do taskkill /PID %%p /F >nul 2>&1`r`nfor /f `"tokens=5`" %%p in ('netstat -aon 2^>nul ^| findstr `":3000 `"') do taskkill /PID %%p /F >nul 2>&1`r`nstart `"TaxAI-Backend`" cmd /c `"call `"%ROOT%_run_backend.bat`"`"`r`ntimeout /t 4 /nobreak >nul`r`nstart `"TaxAI-Frontend`" cmd /k `"cd /d `"%FRONTEND%`" && npm start`"`r`ntimeout /t 6 /nobreak >nul`r`nset `"OPEN_URL=http://localhost:3000`"`r`nfor /f `"delims=`" %%R in ('curl -s --max-time 3 http://localhost:8001/api/v1/config 2^>nul') do set `"CFG=%%R`"`r`necho %CFG% | findstr /i `"\`"setup_complete\`":false`" >nul 2>&1`r`nif not errorlevel 1 set `"OPEN_URL=http://localhost:3000/config`"`r`nstart `"`" `"%OPEN_URL%`"`r`necho.`r`necho Service started: %OPEN_URL%`r`necho Run stop.bat to stop.`r`necho.`r`n"
+[System.IO.File]::WriteAllText($START_BAT, $startContent, [System.Text.Encoding]::ASCII)
+OK "start.bat created"
 
 # _run_backend.bat (재시작 루프용) ──────────────────────────────
-$runBackend = @'
-@echo off
-chcp 65001 >nul 2>&1
-title 세무AI-백엔드
-set "BACKEND=%~dp0backend"
-set "VENV_PY=%BACKEND%\.venv\Scripts\python.exe"
-
-:loop
-cd /d "%BACKEND%"
-"%VENV_PY%" -m uvicorn main:app --port 8001
-if %errorlevel% equ 3 (
-    echo  [백엔드] 설정 변경으로 재시작합니다...
-    timeout /t 2 /nobreak >nul
-    goto loop
-)
-echo  [백엔드] 종료됨.
-'@
-
-$runBackend | Set-Content (Join-Path $ROOT "_run_backend.bat") -Encoding UTF8
-OK "_run_backend.bat 생성됨 (프로젝트 루트)"
+$runBackend = "@echo off`r`nset `"BACKEND=%~dp0backend`"`r`nset `"VENV_PY=%BACKEND%\.venv\Scripts\python.exe`"`r`n:loop`r`ncd /d `"%BACKEND%`"`r`n`"%VENV_PY%`" -m uvicorn main:app --port 8001`r`nif %errorlevel% equ 3 (`r`n    timeout /t 2 /nobreak >nul`r`n    goto loop`r`n)`r`n"
+[System.IO.File]::WriteAllText((Join-Path $ROOT "_run_backend.bat"), $runBackend, [System.Text.Encoding]::ASCII)
+OK "_run_backend.bat created"
 
 # stop.bat ────────────────────────────────────────────────────
-$stopContent = @'
-@echo off
-chcp 65001 >nul 2>&1
-echo.
-echo  세무 AI 어시스턴트를 종료합니다...
-echo.
-
-taskkill /FI "WindowTitle eq 세무AI-백엔드*"   /F >nul 2>&1
-taskkill /FI "WindowTitle eq 세무AI-프론트엔드*" /F >nul 2>&1
-
-for /f "tokens=5" %%p in ('netstat -aon 2^>nul ^| findstr ":8001 "') do taskkill /PID %%p /F >nul 2>&1
-for /f "tokens=5" %%p in ('netstat -aon 2^>nul ^| findstr ":3000 "') do taskkill /PID %%p /F >nul 2>&1
-
-echo  종료 완료.
-timeout /t 2 /nobreak >nul
-'@
-
-$stopContent | Set-Content $STOP_BAT -Encoding UTF8
-OK "stop.bat 생성됨 (프로젝트 루트)"
+$stopContent = "@echo off`r`ntaskkill /FI `"WindowTitle eq TaxAI-Backend*`" /F >nul 2>&1`r`ntaskkill /FI `"WindowTitle eq TaxAI-Frontend*`" /F >nul 2>&1`r`nfor /f `"tokens=5`" %%p in ('netstat -aon 2^>nul ^| findstr `":8001 `"') do taskkill /PID %%p /F >nul 2>&1`r`nfor /f `"tokens=5`" %%p in ('netstat -aon 2^>nul ^| findstr `":3000 `"') do taskkill /PID %%p /F >nul 2>&1`r`necho Stopped.`r`ntimeout /t 2 /nobreak >nul`r`n"
+[System.IO.File]::WriteAllText($STOP_BAT, $stopContent, [System.Text.Encoding]::ASCII)
+OK "stop.bat created"
 
 # ────────────────────────────────────────────────────────────
 # 완료
