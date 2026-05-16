@@ -60,7 +60,7 @@
 │                                                                             │
 │  ① Google Gemini API 키 (권장)                                             │
 │     발급 주소 : https://aistudio.google.com/apikey                         │
-│     무료 티어 제공 / 별도 신용카드 불필요                                   │
+│     유료 서비스 / 사전 크레딧 충전 필요                                     │
 │                                                                             │
 │  ② Anthropic Claude API 키                                                 │
 │     발급 주소 : https://console.anthropic.com/                             │
