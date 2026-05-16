@@ -11,7 +11,6 @@ $BACKEND     = Join-Path $ROOT "backend"
 $FRONTEND    = Join-Path $ROOT "frontend"
 $VENV        = Join-Path $BACKEND ".venv"
 $VENV_PY     = Join-Path $VENV "Scripts\python.exe"
-$VENV_PIP    = Join-Path $VENV "Scripts\pip.exe"
 $ENV_FILE    = Join-Path $BACKEND ".env"
 $ENV_EXAMPLE = Join-Path $BACKEND ".env.example"
 $START_BAT   = Join-Path $ROOT "start.bat"
@@ -110,7 +109,6 @@ $BACKEND     = Join-Path $ROOT "backend"
 $FRONTEND    = Join-Path $ROOT "frontend"
 $VENV        = Join-Path $BACKEND ".venv"
 $VENV_PY     = Join-Path $VENV "Scripts\python.exe"
-$VENV_PIP    = Join-Path $VENV "Scripts\pip.exe"
 $ENV_FILE    = Join-Path $BACKEND ".env"
 $ENV_EXAMPLE = Join-Path $BACKEND ".env.example"
 
@@ -254,9 +252,9 @@ if (-not (Test-Path $envLocal)) {
 Info "Node.js 패키지 설치 중... (시간이 걸릴 수 있습니다)"
 Push-Location $FRONTEND
 try {
-    & npm install --prefer-offline
+    cmd /c "npm install --prefer-offline"
     if ($LASTEXITCODE -ne 0) {
-        & npm install
+        cmd /c "npm install"
         if ($LASTEXITCODE -ne 0) { throw "npm install 실패" }
     }
     OK "Node.js 패키지 설치 완료"
@@ -274,7 +272,7 @@ Step "프론트엔드 빌드 (프로덕션)"
 Info "Next.js 빌드 중... (1~3분 소요)"
 Push-Location $FRONTEND
 try {
-    $buildOutput = & npm run build 2>&1
+    $buildOutput = cmd /c "npm run build" 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Host ($buildOutput | Select-Object -Last 30 | Out-String) -ForegroundColor DarkRed
         throw "빌드 실패"
