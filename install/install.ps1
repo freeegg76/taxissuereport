@@ -213,8 +213,8 @@ if (-not (Test-Path $VENV_PY)) {
 Info "Python 패키지 설치 중... (시간이 걸릴 수 있습니다)"
 Push-Location $BACKEND
 try {
-    & $VENV_PIP install --upgrade pip --quiet 2>&1 | Out-Null
-    & $VENV_PIP install -r requirements.txt --quiet 2>&1 | Out-Null
+    & $VENV_PY -m pip install --upgrade pip --quiet 2>&1 | Out-Null
+    & $VENV_PY -m pip install -r requirements.txt --quiet 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "pip install 실패" }
     OK "Python 패키지 설치 완료"
 } catch {
