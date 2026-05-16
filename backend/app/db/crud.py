@@ -117,6 +117,20 @@ def get_case(db: Session, case_id: int) -> Case | None:
     return db.get(Case, case_id)
 
 
+def set_case_selection_by_ids(db: Session, issue_id: int, selected_ids: list[int]) -> None:
+    now = _now()
+    rank_map = {cid: i + 1 for i, cid in enumerate(selected_ids)}
+    for case in db.query(Case).filter(Case.issue_id == issue_id).all():
+        if case.case_id in rank_map:
+            case.selected = 1
+            case.rank_order = rank_map[case.case_id]
+        else:
+            case.selected = 0
+            case.rank_order = None
+        case.updated_at = now
+    db.commit()
+
+
 # ---------- Reports ----------
 
 def upsert_report(db: Session, issue_id: int, data: dict) -> Report:

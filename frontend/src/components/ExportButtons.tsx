@@ -46,8 +46,7 @@ export default function ExportDropdown({ issueId, isFinalized, onFinalized }: Pr
       const res = await apiClient.post(`/issues/${issueId}/report/export/${type}`);
       const base = (apiClient.defaults.baseURL || "").replace(/\/api\/v1$/, "");
       const rawUrl: string = res.data.download_url || "";
-      const cleanUrl = rawUrl.replace(/^\/api\/v1/, "");
-      const fileUrl = `${base}${cleanUrl}`;
+      const fileUrl = `${base}${rawUrl}`;
       setToast({
         type,
         status: "done",

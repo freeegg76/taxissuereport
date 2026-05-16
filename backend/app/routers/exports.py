@@ -15,8 +15,6 @@ def export_docx(issue_id: int, db: Session = Depends(get_db)):
     report = crud.get_report_by_issue(db, issue_id)
     if not report:
         raise HTTPException(status_code=404, detail="보고서가 없습니다.")
-    if report.status != "finalized":
-        raise HTTPException(status_code=400, detail="확정된 보고서만 내보낼 수 있습니다.")
     try:
         result = generate_docx(report, db)
     except Exception as e:
@@ -29,8 +27,6 @@ def export_pdf(issue_id: int, db: Session = Depends(get_db)):
     report = crud.get_report_by_issue(db, issue_id)
     if not report:
         raise HTTPException(status_code=404, detail="보고서가 없습니다.")
-    if report.status != "finalized":
-        raise HTTPException(status_code=400, detail="확정된 보고서만 내보낼 수 있습니다.")
     try:
         result = generate_pdf(report, db)
     except Exception as e:

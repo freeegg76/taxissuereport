@@ -31,3 +31,7 @@ class CaseSelectionItem(BaseModel):
 
 class CaseSelectionOutput(BaseModel):
     selected_cases: list[CaseSelectionItem]
+
+
+class UserCaseSelection(BaseModel):
+    case_ids: list[int]
