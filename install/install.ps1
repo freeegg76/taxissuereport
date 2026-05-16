@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # 세무 AI 어시스턴트 설치 스크립트 v1.0
 # 실행 방법: install.bat 을 더블클릭 (또는 PowerShell에서 직접 실행)
 
