@@ -211,7 +211,10 @@ if (-not (Test-Path $VENV_PY)) {
 Info "Python 패키지 설치 중... (시간이 걸릴 수 있습니다)"
 Push-Location $BACKEND
 try {
+    # pip 업그레이드 실패는 무시 (일부 환경에서 자기 자신 업그레이드 불가)
     & $VENV_PY -m pip install --upgrade pip --quiet
+    if ($LASTEXITCODE -ne 0) { Warn "pip 업그레이드 건너뜀 (무시하고 계속)" }
+
     & $VENV_PY -m pip install -r requirements.txt --quiet
     if ($LASTEXITCODE -ne 0) { throw "pip install 실패 (exit: $LASTEXITCODE)" }
     OK "Python 패키지 설치 완료"
