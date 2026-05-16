@@ -17,8 +17,9 @@ $ENV_EXAMPLE = Join-Path $BACKEND ".env.example"
 $START_BAT   = Join-Path $ROOT "start.bat"
 $STOP_BAT    = Join-Path $ROOT "stop.bat"
 
+$REPO_ZIP_URL = "https://github.com/freeegg76/taxissuereport/archive/refs/heads/main.zip"
 $STEP = 0
-$TOTAL_STEPS = 6
+$TOTAL_STEPS = 7   # 소스 다운로드 단계 추가
 
 # ── 출력 헬퍼 ────────────────────────────────────────────────────────────────
 function Header {
@@ -55,6 +56,63 @@ function RefreshPath {
 
 # ── 실행 ──────────────────────────────────────────────────────────────────────
 Header
+
+# ────────────────────────────────────────────────────────────
+# STEP 0: 소스코드 확인 / GitHub에서 다운로드
+# ────────────────────────────────────────────────────────────
+Step "소스코드 확인"
+
+$needDownload = (-not (Test-Path $BACKEND)) -or (-not (Test-Path $FRONTEND))
+
+if (-not $needDownload) {
+    OK "소스코드 이미 존재함 → 다운로드 건너뜀"
+} else {
+    Info "소스코드가 없습니다. GitHub에서 다운로드합니다..."
+    Info "설치 위치: $ROOT"
+
+    $TMP_ZIP = Join-Path $env:TEMP "taxissuereport_src.zip"
+    $TMP_DIR = Join-Path $env:TEMP "taxissuereport_src"
+
+    try {
+        # TLS 1.2 강제 (구형 Windows 대응)
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+        Info "다운로드 중... (인터넷 속도에 따라 시간이 걸릴 수 있습니다)"
+        Invoke-WebRequest -Uri $REPO_ZIP_URL -OutFile $TMP_ZIP -UseBasicParsing
+
+        Info "압축 해제 중..."
+        if (Test-Path $TMP_DIR) { Remove-Item $TMP_DIR -Recurse -Force }
+        Expand-Archive -Path $TMP_ZIP -DestinationPath $TMP_DIR -Force
+
+        # GitHub ZIP 은 "taxissuereport-main" 같은 하위 폴더로 압축됨
+        $srcFolder = Get-ChildItem $TMP_DIR -Directory | Select-Object -First 1
+        if (-not $srcFolder) { throw "ZIP 내부 폴더를 찾을 수 없습니다." }
+
+        # install/ 폴더는 현재 실행 중이므로 덮어쓰지 않고, 나머지만 복사
+        Get-ChildItem $srcFolder.FullName | Where-Object { $_.Name -ne "install" } | ForEach-Object {
+            Copy-Item $_.FullName (Join-Path $ROOT $_.Name) -Recurse -Force
+        }
+
+        # 임시 파일 정리
+        Remove-Item $TMP_ZIP -Force -ErrorAction SilentlyContinue
+        Remove-Item $TMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
+
+        OK "소스코드 다운로드 완료"
+    } catch {
+        Remove-Item $TMP_ZIP -Force -ErrorAction SilentlyContinue
+        Remove-Item $TMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
+        Fail "소스코드 다운로드에 실패했습니다.`n  인터넷 연결을 확인하거나 GitHub에서 직접 다운로드하세요.`n  $REPO_ZIP_URL`n  오류: $_"
+    }
+}
+
+# 경로 재확인 (다운로드 후 변수 재설정)
+$BACKEND     = Join-Path $ROOT "backend"
+$FRONTEND    = Join-Path $ROOT "frontend"
+$VENV        = Join-Path $BACKEND ".venv"
+$VENV_PY     = Join-Path $VENV "Scripts\python.exe"
+$VENV_PIP    = Join-Path $VENV "Scripts\pip.exe"
+$ENV_FILE    = Join-Path $BACKEND ".env"
+$ENV_EXAMPLE = Join-Path $BACKEND ".env.example"
 
 # ────────────────────────────────────────────────────────────
 # STEP 1: Python 확인 / 설치
@@ -231,7 +289,7 @@ Pop-Location
 # ────────────────────────────────────────────────────────────
 # STEP 6: 실행 파일 생성
 # ────────────────────────────────────────────────────────────
-Step "실행 파일 생성"
+Step "실행 파일 생성"   # STEP 7
 
 # start.bat ───────────────────────────────────────────────────
 $startContent = @'
