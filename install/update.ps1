@@ -1,5 +1,5 @@
 ﻿#Requires -Version 5.1
-# 세무 AI 어시스턴트 업데이트 스크립트 v1.0
+# 세무 AI 어시스턴트 업데이트 스크립트 v1.1
 
 $ErrorActionPreference = "Stop"
 $null = chcp 65001
@@ -20,7 +20,7 @@ function Header {
     Clear-Host
     Write-Host ""
     Write-Host "  +--------------------------------------------------+" -ForegroundColor DarkCyan
-    Write-Host "  |   세무 AI 어시스턴트   업데이트 프로그램   v1.0  |" -ForegroundColor Cyan
+    Write-Host "  |   세무 AI 어시스턴트   업데이트 프로그램   v1.1  |" -ForegroundColor Cyan
     Write-Host "  +--------------------------------------------------+" -ForegroundColor DarkCyan
     Write-Host ""
 }
@@ -90,13 +90,15 @@ try {
 Step "소스 코드 업데이트"
 
 # 덮어쓰지 않고 보존할 경로
+$INSTALL  = Join-Path $ROOT "install"
 $preserve = @(
     (Join-Path $BACKEND ".env"),
     (Join-Path $BACKEND ".venv"),
     (Join-Path $BACKEND "tax_agent.db"),
     (Join-Path $FRONTEND "node_modules"),
     (Join-Path $FRONTEND ".next"),
-    (Join-Path $FRONTEND ".env.local")
+    (Join-Path $FRONTEND ".env.local"),
+    $INSTALL
 )
 
 function ShouldPreserve([string]$path) {
@@ -185,10 +187,18 @@ try {
 }
 Pop-Location
 
+# ── STEP 5 이후: 불필요한 파일 정리 ─────────────────────────────────────────
+$staleFiles = @(
+    (Join-Path $ROOT "install.zip")
+)
+foreach ($f in $staleFiles) {
+    if (Test-Path $f) { Remove-Item $f -Force -ErrorAction SilentlyContinue }
+}
+
 # ── 완료 ─────────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "  +--------------------------------------------------+" -ForegroundColor Green
-Write-Host "  |               업데이트가 완료되었습니다!          |" -ForegroundColor Green
+Write-Host "  |        업데이트가 완료되었습니다! (v1.1)         |" -ForegroundColor Green
 Write-Host "  +--------------------------------------------------+" -ForegroundColor Green
 Write-Host ""
 
