@@ -1,9 +1,51 @@
 @import "tailwindcss";
 
+/* Tailwind v4: class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Light 테마 (WEBDOT content area style) ───────────── */
 :root {
-  --background: #f8f9fa;
-  --foreground: #171717;
+  --background: #eef2f8;
+  --foreground: #0b1e35;
   --sidebar-width: 240px;
+
+  --clr-bg:            #eef2f8;
+  --clr-surface:       #ffffff;
+  --clr-surface2:      #f4f7fc;
+  --clr-border:        #dce4f0;
+  --clr-divider:       #e8eef7;
+  --clr-text:          #3d5070;
+  --clr-text-strong:   #0b1e35;
+  --clr-secondary:     #637690;
+  --clr-muted:         #95aac5;
+  --clr-hover:         #e6edf7;
+  --clr-active-bg:     rgba(37,99,235,0.08);
+  --clr-active-text:   #1d4ed8;
+  --clr-drag-over:     rgba(37,99,235,0.1);
+  --clr-handle:        rgba(255,255,255,0.12);
+  --clr-accent:        #2563eb;
+}
+
+/* ── Dark 테마 ────────────────────────────────────────── */
+html.dark {
+  --background: #07090f;
+  --foreground: #d8e6f8;
+
+  --clr-bg:            #07090f;
+  --clr-surface:       #0d1420;
+  --clr-surface2:      #131e30;
+  --clr-border:        #1a2540;
+  --clr-divider:       #0d1420;
+  --clr-text:          #8099b8;
+  --clr-text-strong:   #d8e6f8;
+  --clr-secondary:     #526480;
+  --clr-muted:         #3a4e66;
+  --clr-hover:         #131e30;
+  --clr-active-bg:     rgba(59,130,246,0.15);
+  --clr-active-text:   #60a5fa;
+  --clr-drag-over:     rgba(59,130,246,0.2);
+  --clr-handle:        rgba(255,255,255,0.10);
+  --clr-accent:        #3b82f6;
 }
 
 body {
@@ -12,120 +54,190 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", Arial, sans-serif;
 }
 
-/* LLM opinion block */
-.llm-opinion {
-  border-left: 3px solid #f0ad4e;
-  background: #fef9f0;
-  padding: 8px 14px;
-  margin: 10px 0;
-  border-radius: 2px;
-  font-style: italic;
-  color: #7a5700;
+/* ── Editorial label ─────────────────────────────────── */
+.label-editorial {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--clr-muted);
 }
 
-/* Prose styles for report markdown */
+/* ── WEBDOT-style callout boxes ──────────────────────── */
+.callout-info {
+  background: rgba(37,99,235,0.05);
+  border: 1px solid rgba(37,99,235,0.15);
+  border-left: 3px solid #2563eb;
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+
+html.dark .callout-info {
+  background: rgba(59,130,246,0.08);
+  border-color: rgba(59,130,246,0.18);
+  border-left-color: #3b82f6;
+}
+
+.callout-warn {
+  background: rgba(234,179,8,0.06);
+  border: 1px solid rgba(234,179,8,0.2);
+  border-left: 3px solid #ca8a04;
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+
+html.dark .callout-warn {
+  background: rgba(234,179,8,0.07);
+  border-color: rgba(234,179,8,0.18);
+  border-left-color: #eab308;
+}
+
+/* ── LLM opinion block ───────────────────────────────── */
+.llm-opinion {
+  border-left: 3px solid #d4a843;
+  background: rgba(234,179,8,0.06);
+  padding: 10px 16px;
+  margin: 10px 0;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+  color: #92600a;
+}
+
+html.dark .llm-opinion {
+  background: rgba(212,168,67,0.07);
+  color: #d4a843;
+  border-left-color: #d4a843;
+}
+
+/* ── Report prose ────────────────────────────────────── */
 .report-prose h1 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-top: 2rem;
   margin-bottom: 0.75rem;
-  color: #1e293b;
+  color: #0b1e35;
+  letter-spacing: -0.02em;
 }
 
 .report-prose h2 {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  margin-top: 1.25rem;
+  margin-top: 1.75rem;
   margin-bottom: 0.5rem;
-  color: #1e293b;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 4px;
+  color: #0b1e35;
+  border-bottom: 1px solid #dce4f0;
+  padding-bottom: 6px;
+  letter-spacing: -0.01em;
 }
 
 .report-prose h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
   margin-bottom: 0.4rem;
-  color: #334155;
+  color: #1e3a5f;
 }
 
 .report-prose p {
-  margin-bottom: 0.6rem;
-  line-height: 1.7;
-  font-size: 0.9rem;
+  margin-bottom: 0.7rem;
+  line-height: 1.8;
+  font-size: 0.89rem;
+  color: #3d5070;
 }
 
 .report-prose ul, .report-prose ol {
   margin: 0.5rem 0 0.5rem 1.25rem;
-  font-size: 0.9rem;
-  line-height: 1.7;
+  font-size: 0.89rem;
+  line-height: 1.8;
+  color: #3d5070;
 }
 
-.report-prose li {
-  margin-bottom: 0.25rem;
-}
+.report-prose li { margin-bottom: 0.3rem; }
 
 .report-prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   margin: 0.75rem 0;
 }
 
 .report-prose th {
-  border: 1px solid #cbd5e1;
-  background: #f1f5f9;
-  padding: 6px 10px;
+  border: 1px solid #dce4f0;
+  background: #eef2f8;
+  padding: 8px 12px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: #0b1e35;
 }
 
 .report-prose td {
-  border: 1px solid #cbd5e1;
-  padding: 6px 10px;
+  border: 1px solid #dce4f0;
+  padding: 8px 12px;
+  color: #3d5070;
 }
 
 .report-prose blockquote {
-  border-left: 3px solid #94a3b8;
-  background: #f8fafc;
-  padding: 6px 12px;
-  margin: 8px 0;
-  color: #475569;
+  border-left: 3px solid #95aac5;
+  background: #f4f7fc;
+  padding: 8px 16px;
+  margin: 10px 0;
+  color: #526480;
   font-style: italic;
+  border-radius: 0 6px 6px 0;
 }
 
 .report-prose hr {
   border: none;
-  border-top: 1px solid #e2e8f0;
-  margin: 1rem 0;
+  border-top: 1px solid #dce4f0;
+  margin: 1.25rem 0;
 }
 
-/* Toast animation */
+/* dark mode prose */
+html.dark .report-prose h1,
+html.dark .report-prose h2 {
+  color: var(--clr-text-strong);
+  border-bottom-color: var(--clr-border);
+}
+html.dark .report-prose h3 { color: var(--clr-text); }
+html.dark .report-prose p,
+html.dark .report-prose ul,
+html.dark .report-prose ol,
+html.dark .report-prose li { color: var(--clr-text); }
+html.dark .report-prose th {
+  background: var(--clr-surface2);
+  border-color: var(--clr-border);
+  color: var(--clr-text-strong);
+}
+html.dark .report-prose td { border-color: var(--clr-border); color: var(--clr-text); }
+html.dark .report-prose blockquote {
+  border-left-color: var(--clr-muted);
+  background: var(--clr-surface2);
+  color: var(--clr-secondary);
+}
+html.dark .report-prose hr { border-top-color: var(--clr-border); }
+
+/* ── Sidebar hover dots ───────────────────────────────── */
+.issue-row .issue-dots { opacity: 0; pointer-events: none; transition: opacity 0.1s; }
+.issue-row:hover .issue-dots { opacity: 1; pointer-events: auto; }
+.issue-dots.is-open { opacity: 1; pointer-events: auto; }
+
+/* ── Toast ───────────────────────────────────────────── */
 @keyframes slideInRight {
   from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(0);    opacity: 1; }
 }
-
 @keyframes fadeOut {
   from { opacity: 1; }
-  to { opacity: 0; }
+  to   { opacity: 0; }
 }
+.toast-enter { animation: slideInRight 0.25s ease-out forwards; }
+.toast-exit  { animation: fadeOut 0.3s ease-in forwards; }
 
-.toast-enter {
-  animation: slideInRight 0.25s ease-out forwards;
-}
-
-.toast-exit {
-  animation: fadeOut 0.3s ease-in forwards;
-}
-
-/* Slide panel */
+/* ── Slide panel ─────────────────────────────────────── */
 @keyframes slideInPanel {
   from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  to   { transform: translateX(0); }
 }
-
-.panel-enter {
-  animation: slideInPanel 0.25s ease-out forwards;
-}
+.panel-enter { animation: slideInPanel 0.25s ease-out forwards; }

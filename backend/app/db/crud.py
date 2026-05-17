@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from sqlalchemy.orm import Session
-from app.db.models import Issue, Case, Report, ExportedFile, ApiLog
+from app.db.models import Issue, Case, Report, ExportedFile, ApiLog, Folder
 from app.schemas.issue_schemas import IssueCreate, IssueAnalysisOutput
 from app.schemas.case_schemas import CaseSelectionItem
 
@@ -35,6 +35,29 @@ def list_issues(db: Session) -> list[Issue]:
     return db.query(Issue).order_by(Issue.created_at.desc()).all()
 
 
+def delete_issue(db: Session, issue_id: int) -> bool:
+    issue = db.get(Issue, issue_id)
+    if not issue:
+        return False
+    db.query(ApiLog).filter(ApiLog.issue_id == issue_id).delete()
+    report = db.query(Report).filter(Report.issue_id == issue_id).first()
+    if report:
+        db.query(ExportedFile).filter(ExportedFile.report_id == report.report_id).delete()
+        db.delete(report)
+    db.query(Case).filter(Case.issue_id == issue_id).delete()
+    db.delete(issue)
+    db.commit()
+    return True
+
+
+def rename_issue(db: Session, issue: Issue, title: str) -> Issue:
+    issue.title = title
+    issue.updated_at = _now()
+    db.commit()
+    db.refresh(issue)
+    return issue
+
+
 def update_issue_status(db: Session, issue: Issue, status: str) -> Issue:
     issue.status = status
     issue.updated_at = _now()
@@ -49,6 +72,45 @@ def update_issue_analysis(db: Session, issue: Issue, result: IssueAnalysisOutput
     issue.extracted_keywords = json.dumps(result.extracted_keywords, ensure_ascii=False)
     issue.search_strategy = json.dumps(result.search_strategy.model_dump(), ensure_ascii=False)
     issue.status = "analyzed"
+    issue.updated_at = _now()
+    db.commit()
+    db.refresh(issue)
+    return issue
+
+
+# ---------- Folders ----------
+
+def list_folders(db: Session) -> list[Folder]:
+    return db.query(Folder).order_by(Folder.created_at).all()
+
+
+def create_folder(db: Session, name: str) -> Folder:
+    folder = Folder(name=name, created_at=_now())
+    db.add(folder)
+    db.commit()
+    db.refresh(folder)
+    return folder
+
+
+def rename_folder(db: Session, folder: Folder, name: str) -> Folder:
+    folder.name = name
+    db.commit()
+    db.refresh(folder)
+    return folder
+
+
+def delete_folder(db: Session, folder_id: int) -> bool:
+    folder = db.get(Folder, folder_id)
+    if not folder:
+        return False
+    db.query(Issue).filter(Issue.folder_id == folder_id).update({"folder_id": None})
+    db.delete(folder)
+    db.commit()
+    return True
+
+
+def assign_issue_folder(db: Session, issue: Issue, folder_id: int | None) -> Issue:
+    issue.folder_id = folder_id
     issue.updated_at = _now()
     db.commit()
     db.refresh(issue)

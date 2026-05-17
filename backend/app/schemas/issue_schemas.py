@@ -27,6 +27,10 @@ class IssueAnalysisOutput(BaseModel):
         return v
 
 
+class IssueRename(BaseModel):
+    title: str
+
+
 class IssueResponse(BaseModel):
     issue_id: int
     title: str | None
@@ -36,6 +40,7 @@ class IssueResponse(BaseModel):
     extracted_keywords: list[str] | None
     search_strategy: dict | None
     status: str
+    folder_id: int | None
     created_at: str
     updated_at: str
 

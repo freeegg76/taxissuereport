@@ -1,0 +1,52 @@
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.row:hover {
+  background-color: #f9fafb;
+}
+
+.rowActive {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.dots {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #9ca3af;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.row:hover .dots {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dots:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.dotsOpen {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}

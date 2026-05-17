@@ -8,6 +8,16 @@ def _now() -> str:
     return datetime.utcnow().isoformat()
 
 
+class Folder(Base):
+    __tablename__ = "TB_FOLDERS"
+
+    folder_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[str] = mapped_column(Text, nullable=False, default=_now)
+
+    issues: Mapped[list["Issue"]] = relationship("Issue", back_populates="folder")
+
+
 class Issue(Base):
     __tablename__ = "TB_ISSUES"
 
@@ -19,9 +29,11 @@ class Issue(Base):
     extracted_keywords: Mapped[str | None] = mapped_column(Text)  # JSON string
     search_strategy: Mapped[str | None] = mapped_column(Text)     # JSON string
     status: Mapped[str] = mapped_column(Text, nullable=False, default="created")
+    folder_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("TB_FOLDERS.folder_id"), nullable=True)
     created_at: Mapped[str] = mapped_column(Text, nullable=False, default=_now)
     updated_at: Mapped[str] = mapped_column(Text, nullable=False, default=_now)
 
+    folder: Mapped["Folder | None"] = relationship("Folder", back_populates="issues")
     cases: Mapped[list["Case"]] = relationship("Case", back_populates="issue")
     report: Mapped["Report | None"] = relationship("Report", back_populates="issue", uselist=False)
     api_logs: Mapped[list["ApiLog"]] = relationship("ApiLog", back_populates="issue")

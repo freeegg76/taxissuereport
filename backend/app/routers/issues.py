@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.db import crud
-from app.schemas.issue_schemas import IssueCreate, IssueResponse
+from app.schemas.issue_schemas import IssueCreate, IssueRename, IssueResponse
+from app.schemas.folder_schemas import IssueFolderAssign
 
 router = APIRouter()
 
@@ -31,6 +32,7 @@ def _serialize_issue(issue) -> dict:
         "extracted_keywords": keywords,
         "search_strategy": strategy,
         "status": issue.status,
+        "folder_id": issue.folder_id,
         "created_at": issue.created_at,
         "updated_at": issue.updated_at,
     }
@@ -54,3 +56,29 @@ def get_issue(issue_id: int, db: Session = Depends(get_db)):
     if not issue:
         raise HTTPException(status_code=404, detail="이슈를 찾을 수 없습니다.")
     return _serialize_issue(issue)
+
+
+@router.patch("/issues/{issue_id}", response_model=IssueResponse)
+def rename_issue(issue_id: int, data: IssueRename, db: Session = Depends(get_db)):
+    issue = crud.get_issue(db, issue_id)
+    if not issue:
+        raise HTTPException(status_code=404, detail="이슈를 찾을 수 없습니다.")
+    title = data.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="제목을 입력하세요.")
+    return _serialize_issue(crud.rename_issue(db, issue, title))
+
+
+@router.delete("/issues/{issue_id}", status_code=204)
+def delete_issue(issue_id: int, db: Session = Depends(get_db)):
+    deleted = crud.delete_issue(db, issue_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="이슈를 찾을 수 없습니다.")
+
+
+@router.patch("/issues/{issue_id}/folder", response_model=IssueResponse)
+def assign_folder(issue_id: int, data: IssueFolderAssign, db: Session = Depends(get_db)):
+    issue = crud.get_issue(db, issue_id)
+    if not issue:
+        raise HTTPException(status_code=404, detail="이슈를 찾을 수 없습니다.")
+    return _serialize_issue(crud.assign_issue_folder(db, issue, data.folder_id))
